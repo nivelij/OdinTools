@@ -58,6 +58,7 @@ class MainViewModel @Inject constructor(
                 showIncompatibleDeviceDialog = deviceType != ODIN2,
                 singlePressHomeEnabled = !settings.preventPressHome,
                 showPServerNotAvailableDialog = !executor.pServerAvailable,
+                appOverridesEnabled = prefs.appOverridesEnabled,
                 overrideDelayEnabled = prefs.overrideDelay,
                 vibrationEnabled = settings.vibrationEnabled,
                 chargeLimitEnabled = prefs.chargeLimitEnabled,

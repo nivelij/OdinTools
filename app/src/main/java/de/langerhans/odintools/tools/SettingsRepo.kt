@@ -118,6 +118,7 @@ class SettingsRepo @Inject constructor(
         private const val PACKAGE = BuildConfig.APPLICATION_ID
         const val KEY_VENDOR_NAME = "ro.vendor.retro.name"
         const val KEY_BUILD_VERSION = "ro.build.odin2.ota.version"
+        const val KEY_FOTA_VERSION = "ro.fota.version"
         const val KEY_SATURATION = "persist.sys.sf.color_saturation"
         const val KEY_ACCESSIBILITY_SERVICES = "enabled_accessibility_services"
         const val KEY_APP_WHITELIST = "app_whiteList"

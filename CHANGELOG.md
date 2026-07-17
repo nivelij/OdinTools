@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.3.3
+
+### Fixes
+- **App overrides:** the master toggle now reflects its saved state after relaunch. Previously the switch always showed "on" again on restart (the stored value and the actual behaviour were correct — only the on-screen switch was wrong).
+- **Device version:** now shown on the Odin 2 Portal, which doesn't populate `ro.build.odin2.ota.version` — it falls back to the FOTA version property (e.g. "1.0.0.338"). The original Odin 2 is unaffected.
+
+### Other
+- New app icon (white wing on black).
+
 ## v1.3.2
 
 ### Fixes
