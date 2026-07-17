@@ -63,6 +63,7 @@ class MainViewModel @Inject constructor(
                 vibrationEnabled = settings.vibrationEnabled,
                 chargeLimitEnabled = prefs.chargeLimitEnabled,
                 videoOutputOverrideEnabled = prefs.videoOutputOverrideEnabled,
+                ledEnabled = prefs.ledEnabled,
             )
         }
     }
@@ -296,6 +297,57 @@ class MainViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(showChargeLimitDialog = false, currentChargeLimit = newValue)
+        }
+    }
+
+    fun updateLedPreference(newValue: Boolean) {
+        prefs.ledEnabled = newValue
+        if (newValue) {
+            // Push the saved config so enabling uses the user's colors/brightness, not whatever
+            // the system setting happens to hold.
+            settings.setLedColors(prefs.ledColorLeft, prefs.ledColorRight)
+            settings.setLedBrightnessPercent(prefs.ledBrightness)
+        }
+        settings.setLedEnabled(newValue)
+        _uiState.update {
+            it.copy(ledEnabled = newValue)
+        }
+    }
+
+    fun ledClicked() {
+        _uiState.update {
+            it.copy(
+                showLedDialog = true,
+                ledDifferentColors = prefs.ledDifferentColors,
+                ledColorLeft = prefs.ledColorLeft,
+                ledColorRight = prefs.ledColorRight,
+                ledBrightness = prefs.ledBrightness,
+            )
+        }
+    }
+
+    fun ledDialogDismissed() {
+        _uiState.update {
+            it.copy(showLedDialog = false)
+        }
+    }
+
+    fun saveLed(differentColors: Boolean, colorLeft: Int, colorRight: Int, brightness: Int) {
+        prefs.ledDifferentColors = differentColors
+        prefs.ledColorLeft = colorLeft
+        prefs.ledColorRight = colorRight
+        prefs.ledBrightness = brightness
+        // Apply immediately so changes are visible while the LEDs are on.
+        settings.setLedColors(colorLeft, colorRight)
+        settings.setLedBrightnessPercent(brightness)
+        _uiState.update {
+            it.copy(
+                showLedDialog = false,
+                ledDifferentColors = differentColors,
+                ledColorLeft = colorLeft,
+                ledColorRight = colorRight,
+                ledBrightness = brightness,
+            )
         }
     }
 

@@ -87,6 +87,15 @@
     <string name="chargeLimitNotificationPausedText">Charging paused at %1$d%% to protect your battery.</string>
     <string name="chargeLimitNotificationResumedTitle">Charging resumed</string>
     <string name="chargeLimitNotificationResumedText">Battery dropped to %1$d%%, charging again.</string>
+    <string name="lighting">Lighting</string>
+    <string name="ledLighting">Thumbstick LED</string>
+    <string name="ledLightingDescription">Control the RGB lighting around the thumbsticks.</string>
+    <string name="ledSameColor">Same color</string>
+    <string name="ledDifferentColor">Different colors</string>
+    <string name="ledBothSticks">Both sticks</string>
+    <string name="ledLeft">Left</string>
+    <string name="ledRight">Right</string>
+    <string name="ledBrightness">Brightness</string>
     <string name="debug">Debug</string>
     <string name="dumpLogToFile">Dump log to file</string>
     <string name="dumpLogToFileDescription">Dump log output to a text file in the internal memory.</string>

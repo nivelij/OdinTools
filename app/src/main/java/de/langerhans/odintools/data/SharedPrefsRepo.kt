@@ -49,6 +49,26 @@ class SharedPrefsRepo @Inject constructor(
         get() = prefs.getInt(KEY_MAX_BATTERY_LEVEL, 80)
         set(value) = prefs.edit().putInt(KEY_MAX_BATTERY_LEVEL, value).apply()
 
+    var ledEnabled
+        get() = prefs.getBoolean(KEY_LED_ENABLED, false)
+        set(value) = prefs.edit().putBoolean(KEY_LED_ENABLED, value).apply()
+
+    var ledDifferentColors
+        get() = prefs.getBoolean(KEY_LED_DIFFERENT_COLORS, false)
+        set(value) = prefs.edit().putBoolean(KEY_LED_DIFFERENT_COLORS, value).apply()
+
+    var ledColorLeft
+        get() = prefs.getInt(KEY_LED_COLOR_LEFT, DEFAULT_LED_COLOR)
+        set(value) = prefs.edit().putInt(KEY_LED_COLOR_LEFT, value).apply()
+
+    var ledColorRight
+        get() = prefs.getInt(KEY_LED_COLOR_RIGHT, DEFAULT_LED_COLOR)
+        set(value) = prefs.edit().putInt(KEY_LED_COLOR_RIGHT, value).apply()
+
+    var ledBrightness
+        get() = prefs.getInt(KEY_LED_BRIGHTNESS, DEFAULT_LED_BRIGHTNESS)
+        set(value) = prefs.edit().putInt(KEY_LED_BRIGHTNESS, value).apply()
+
     private var chargeLimitEnabledListener: OnSharedPreferenceChangeListener? = null
 
     fun observeChargeLimitEnabledState(onChargeLimitEnabled: (newState: Boolean) -> Unit) {
@@ -126,6 +146,15 @@ class SharedPrefsRepo @Inject constructor(
         private const val KEY_CHARGE_LIMIT_ENABLED = "charge_limit_enabled"
         private const val KEY_MIN_BATTERY_LEVEL = "min_battery_level"
         private const val KEY_MAX_BATTERY_LEVEL = "max_battery_level"
+        private const val KEY_LED_ENABLED = "led_enabled"
+        private const val KEY_LED_DIFFERENT_COLORS = "led_different_colors"
+        private const val KEY_LED_COLOR_LEFT = "led_color_left"
+        private const val KEY_LED_COLOR_RIGHT = "led_color_right"
+        private const val KEY_LED_BRIGHTNESS = "led_brightness"
+
+        // Stock Odin 2 defaults: periwinkle (#ff7485ff) at 51% brightness.
+        private const val DEFAULT_LED_COLOR = 0xFF7485FF.toInt()
+        private const val DEFAULT_LED_BRIGHTNESS = 51
         private const val KEY_VIDEO_OUTPUT_OVERRIDE_ENABLED = "video_output_override_enabled"
         private const val KEY_VIDEO_OUTPUT_CONTROLLER_STYLE = "video_output_override_controller_style"
         private const val KEY_VIDEO_OUTPUT_L2R2_STYLE = "video_output_override_l2r2_style"

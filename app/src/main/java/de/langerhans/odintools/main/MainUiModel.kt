@@ -41,7 +41,16 @@ data class MainUiModel(
     val showChargeLimitDialog: Boolean = false,
     val chargeLimitEnabled: Boolean = false,
     val currentChargeLimit: ClosedRange<Int> = 20..80,
+
+    val showLedDialog: Boolean = false,
+    val ledEnabled: Boolean = false,
+    val ledDifferentColors: Boolean = false,
+    val ledColorLeft: Int = DEFAULT_LED_COLOR,
+    val ledColorRight: Int = DEFAULT_LED_COLOR,
+    val ledBrightness: Int = 51,
 )
+
+private const val DEFAULT_LED_COLOR = 0xFF7485FF.toInt()
 
 class CheckboxPreferenceUiModel(
     val key: String,

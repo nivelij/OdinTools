@@ -33,6 +33,7 @@ import de.langerhans.odintools.tools.DeviceType.ODIN2
 import de.langerhans.odintools.tools.SettingsRepo
 import de.langerhans.odintools.ui.composables.ChargeLimitPreferenceDialog
 import de.langerhans.odintools.ui.composables.CheckBoxDialogPreference
+import de.langerhans.odintools.ui.composables.LedPreferenceDialog
 import de.langerhans.odintools.ui.composables.NotAnOdinDialog
 import de.langerhans.odintools.ui.composables.OdinTopAppBar
 import de.langerhans.odintools.ui.composables.PServerNotAvailableDialog
@@ -154,6 +155,19 @@ fun SettingsScreen(viewModel: MainViewModel = hiltViewModel(), navigateToOverrid
         )
     }
 
+    if (uiState.showLedDialog) {
+        LedPreferenceDialog(
+            initialDifferentColors = uiState.ledDifferentColors,
+            initialColorLeft = uiState.ledColorLeft,
+            initialColorRight = uiState.ledColorRight,
+            initialBrightness = uiState.ledBrightness,
+            onCancel = { viewModel.ledDialogDismissed() },
+            onSave = { differentColors, colorLeft, colorRight, brightness ->
+                viewModel.saveLed(differentColors, colorLeft, colorRight, brightness)
+            },
+        )
+    }
+
     Scaffold(topBar = { OdinTopAppBar(deviceVersion = uiState.deviceVersion) }) { contentPadding ->
         Column(
             modifier = Modifier
@@ -246,6 +260,16 @@ fun SettingsScreen(viewModel: MainViewModel = hiltViewModel(), navigateToOverrid
                     onClick = { viewModel.vibrationClicked() },
                 ) {
                     viewModel.updateVibrationPreference(it)
+                }
+                SettingsHeader(R.string.lighting)
+                SwitchableTriggerPreference(
+                    icon = R.drawable.ic_led,
+                    title = R.string.ledLighting,
+                    description = R.string.ledLightingDescription,
+                    state = uiState.ledEnabled,
+                    onClick = { viewModel.ledClicked() },
+                ) {
+                    viewModel.updateLedPreference(it)
                 }
                 SettingsHeader(R.string.battery)
                 SwitchableTriggerPreference(

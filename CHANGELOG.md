@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.4
+
+### Features
+- **Thumbstick LED:** new *Lighting* section to control the RGB rings around the thumbsticks (Odin 2). Turn them on/off, set the same color for both sticks or a different color per stick, pick from a color wheel or 10 presets, and adjust brightness. Backed by the device's own `joystick_light_enabled` / `joystick_led_light_picker_color` / `led_light_brightness_percent` settings, written per-stick.
+
 ## v1.3.3
 
 ### Fixes

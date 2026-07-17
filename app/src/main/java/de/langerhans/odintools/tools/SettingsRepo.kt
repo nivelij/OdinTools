@@ -1,6 +1,7 @@
 package de.langerhans.odintools.tools
 
 import de.langerhans.odintools.BuildConfig
+import java.util.Locale
 import javax.inject.Inject
 
 class SettingsRepo @Inject constructor(
@@ -106,6 +107,29 @@ class SettingsRepo @Inject constructor(
         get() = executor.getIntValue(KEY_RESTRICT_CURRENT, 0)
         set(value) = executor.setIntValue(KEY_RESTRICT_CURRENT, value)
 
+    /**
+     * Thumbstick LED control. The Odin 2 exposes the joystick lighting through three system
+     * settings, each addressed per-stick as a comma-separated "LEFT,RIGHT" pair (confirmed by
+     * probing the device): [KEY_JOYSTICK_LIGHT_ENABLED] booleans, [KEY_JOYSTICK_LIGHT_COLOR]
+     * as "#AARRGGBB,#AARRGGBB", and a single [KEY_LED_BRIGHTNESS] float from 0.0 to 1.0.
+     */
+    fun setLedEnabled(enabled: Boolean) {
+        val value = if (enabled) "1,1" else "0,0"
+        executor.setStringSystemSetting(KEY_JOYSTICK_LIGHT_ENABLED, value)
+    }
+
+    fun setLedColors(leftArgb: Int, rightArgb: Int) {
+        // Single-quote the value: it starts with '#', which the root shell would otherwise treat
+        // as a comment and drop, silently failing the write (unlike the '#'-free enabled/brightness).
+        val colors = "${argbToLedHex(leftArgb)},${argbToLedHex(rightArgb)}"
+        executor.setStringSystemSetting(KEY_JOYSTICK_LIGHT_COLOR, "'$colors'")
+    }
+
+    fun setLedBrightnessPercent(percent: Int) {
+        val fraction = percent.coerceIn(0, 100) / 100f
+        executor.setStringSystemSetting(KEY_LED_BRIGHTNESS, String.format(Locale.US, "%.2f", fraction))
+    }
+
     var chargingLimit80Enabled: Boolean
         get() = executor.getBooleanSystemSetting(KEY_CHARGING_LIMIT_80, false)
         set(value) = executor.setBooleanSystemSetting(KEY_CHARGING_LIMIT_80, value)
@@ -132,5 +156,11 @@ class SettingsRepo @Inject constructor(
         const val KEY_CHARGING_LIMIT_10 = "charging_limit_less_than_10"
         const val KEY_RESTRICT_CHARGE = "/sys/class/qcom-battery/restrict_chg"
         const val KEY_RESTRICT_CURRENT = "/sys/class/qcom-battery/restrict_cur"
+        const val KEY_JOYSTICK_LIGHT_ENABLED = "joystick_light_enabled"
+        const val KEY_JOYSTICK_LIGHT_COLOR = "joystick_led_light_picker_color"
+        const val KEY_LED_BRIGHTNESS = "led_light_brightness_percent"
+
+        /** Format an ARGB color int as the "#AARRGGBB" string the joystick LED setting expects. */
+        internal fun argbToLedHex(argb: Int): String = "#%08x".format(argb)
     }
 }
