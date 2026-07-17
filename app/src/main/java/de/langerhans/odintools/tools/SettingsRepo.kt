@@ -10,6 +10,7 @@ class SettingsRepo @Inject constructor(
     fun applyRequiredSettings() {
         enableA11yService()
         grantAllAppsPermission()
+        grantNotificationPermission()
         // Don't add to whitelist on debug builds, otherwise even Android Studio can't kill the app
         if (!BuildConfig.DEBUG) {
             addOdinToolsToWhitelist()
@@ -32,6 +33,12 @@ class SettingsRepo @Inject constructor(
 
     private fun grantAllAppsPermission() {
         executor.executeAsRoot("pm grant $PACKAGE android.permission.QUERY_ALL_PACKAGES")
+    }
+
+    private fun grantNotificationPermission() {
+        // Self-grant like QUERY_ALL_PACKAGES so charge-limit notifications can post without
+        // prompting the user (minSdk 33 makes POST_NOTIFICATIONS a runtime permission).
+        executor.executeAsRoot("pm grant $PACKAGE android.permission.POST_NOTIFICATIONS")
     }
 
     private fun addOdinToolsToWhitelist() {

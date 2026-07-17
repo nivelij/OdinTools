@@ -82,6 +82,11 @@
         Charging separation means the power goes straight to the device, bypassing the battery.
         Notice that if the power source is insufficient, battery drain will occur.
     </string>
+    <string name="chargeLimitNotificationChannelName">Charge limit</string>
+    <string name="chargeLimitNotificationPausedTitle">Charge limit reached</string>
+    <string name="chargeLimitNotificationPausedText">Charging paused at %1$d%% to protect your battery.</string>
+    <string name="chargeLimitNotificationResumedTitle">Charging resumed</string>
+    <string name="chargeLimitNotificationResumedText">Battery dropped to %1$d%%, charging again.</string>
     <string name="debug">Debug</string>
     <string name="dumpLogToFile">Dump log to file</string>
     <string name="dumpLogToFileDescription">Dump log output to a text file in the internal memory.</string>

@@ -38,8 +38,14 @@ class BatteryLevelReceiver : BroadcastReceiver() {
                 separationEnabled = settings.chargingSeparationEnabled(),
             )
         ) {
-            ChargeAction.ENABLE_SEPARATION -> settings.enableChargingSeparation()
-            ChargeAction.DISABLE_SEPARATION -> settings.disableChargingSeparation()
+            ChargeAction.ENABLE_SEPARATION -> {
+                settings.enableChargingSeparation()
+                ChargeLimitNotifier.notifySeparationEnabled(context, batteryLevel)
+            }
+            ChargeAction.DISABLE_SEPARATION -> {
+                settings.disableChargingSeparation()
+                ChargeLimitNotifier.notifySeparationDisabled(context, batteryLevel)
+            }
             ChargeAction.NONE -> Unit
         }
     }
