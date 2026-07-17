@@ -1,4 +1,6 @@
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.com.android.application)
@@ -9,6 +11,16 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ktlint)
 }
+
+// Release signing: read from keystore.properties (local dev) or environment variables (CI).
+// Reuses the personal android-corewatch release key so OdinTools builds are upgradeable.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) FileInputStream(keystorePropertiesFile).use { load(it) }
+}
+val releaseStoreFile: String? =
+    System.getenv("KEYSTORE_FILE") ?: keystoreProperties.getProperty("storeFile")
+val hasReleaseSigning = releaseStoreFile != null
 
 android {
     namespace = "de.langerhans.odintools"
@@ -24,9 +36,28 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    ?: keystoreProperties.getProperty("storePassword")
+                keyAlias = System.getenv("KEY_ALIAS")
+                    ?: keystoreProperties.getProperty("keyAlias")
+                keyPassword = System.getenv("KEY_PASSWORD")
+                    ?: keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             initWith(buildTypes.getByName("debug"))
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isDebuggable = false
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

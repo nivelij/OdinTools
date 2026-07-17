@@ -9,3 +9,6 @@
 .cxx
 local.properties
 /.kotlin/sessions/
+
+# Release signing secrets (never commit)
+/keystore.properties
