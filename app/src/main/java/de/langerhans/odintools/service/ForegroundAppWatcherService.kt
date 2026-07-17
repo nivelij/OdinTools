@@ -17,6 +17,7 @@ import de.langerhans.odintools.models.FanMode
 import de.langerhans.odintools.models.L2R2Style
 import de.langerhans.odintools.models.PerfMode
 import de.langerhans.odintools.tools.BatteryLevelReceiver
+import de.langerhans.odintools.tools.SettingsRepo
 import de.langerhans.odintools.tools.ShellExecutor
 import de.langerhans.odintools.tools.VideoOutputReceiver
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,9 @@ class ForegroundAppWatcherService @Inject constructor() : AccessibilityService()
 
     @Inject
     lateinit var executor: ShellExecutor
+
+    @Inject
+    lateinit var settings: SettingsRepo
 
     @Inject
     lateinit var prefs: SharedPrefsRepo
@@ -167,6 +171,9 @@ class ForegroundAppWatcherService @Inject constructor() : AccessibilityService()
             registerReceiver(batteryLevelReceiver, intentFilter)
         } else if (!newValue && chargeLimitEnabled) {
             unregisterReceiver(batteryLevelReceiver)
+            // Turning the feature off must also lift any separation it engaged; otherwise
+            // charging stays bypassed until a later battery event hits the disable threshold.
+            settings.disableChargingSeparationIfActive()
         }
         chargeLimitEnabled = newValue
     }

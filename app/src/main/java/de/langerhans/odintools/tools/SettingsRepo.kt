@@ -61,6 +61,16 @@ class SettingsRepo @Inject constructor(
         return isChargingSeparation && restrictCharge && restrictCurrent == 1000
     }
 
+    /**
+     * Lift charging separation only if it is currently engaged. Used when the auto charge-limit
+     * feature is switched off, so charging is not left bypassed until some later battery event.
+     */
+    fun disableChargingSeparationIfActive() {
+        if (chargingSeparationEnabled()) {
+            disableChargingSeparation()
+        }
+    }
+
     private var whitelist: String
         get() = executor.getStringSystemSetting(KEY_APP_WHITELIST, "")
         set(value) = executor.setStringSystemSetting(KEY_APP_WHITELIST, value)

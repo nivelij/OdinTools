@@ -16,6 +16,7 @@ com-google-dagger-hilt-android = "2.51.1"
 com-google-devtools-ksp = "2.0.0-1.0.21"
 junit = "4.13.2"
 ktlint = "12.1.1"
+mockk = "1.13.11"
 nl-littlerobots-version-catalog-update = "0.8.4"
 kotlin = "2.0.0"
 
@@ -44,6 +45,7 @@ com-google-accompanist-accompanist-drawablepainter = { module = "com.google.acco
 com-google-dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "com-google-dagger" }
 com-google-dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "com-google-dagger" }
 junit = { module = "junit:junit", version.ref = "junit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
@@ -92,4 +94,5 @@ appKsp = [
 ]
 appUnitTest = [
     "junit",
+    "mockk",
 ]

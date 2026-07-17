@@ -4,26 +4,20 @@ import android.annotation.SuppressLint
 import android.os.IBinder
 import android.os.Parcel
 import java.nio.charset.Charset
-import javax.inject.Inject
 
 @SuppressLint("DiscouragedPrivateApi", "PrivateApi") // :kekw:
-class ShellExecutor @Inject constructor() {
+open class ShellExecutor {
 
-    private val binder: IBinder?
-    var pServerAvailable: Boolean = false
-        private set
+    private val binder: IBinder? = runCatching {
+        val serviceManager = Class.forName("android.os.ServiceManager")
+        val getService = serviceManager.getDeclaredMethod("getService", String::class.java)
+        getService.invoke(serviceManager, "PServerBinder") as IBinder
+    }.getOrNull()
 
-    init {
-        binder = runCatching {
-            val serviceManager = Class.forName("android.os.ServiceManager")
-            val getService = serviceManager.getDeclaredMethod("getService", String::class.java)
-            val binder = getService.invoke(serviceManager, "PServerBinder") as IBinder
-            pServerAvailable = true
-            binder
-        }.getOrDefault(null)
-    }
+    open val pServerAvailable: Boolean
+        get() = binder != null
 
-    fun executeAsRoot(cmd: String): Result<String?> {
+    open fun executeAsRoot(cmd: String): Result<String?> {
         if (binder == null) return Result.failure(IllegalStateException("PServer not available!"))
 
         val data = Parcel.obtain()

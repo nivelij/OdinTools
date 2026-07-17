@@ -62,6 +62,9 @@ class AppOverridesViewModel @Inject constructor(
                     isNewApp = app == null,
                     disabledFanModeKeys = getDisabledFanModes(initialPerfMode),
                     deviceVersion = deviceUtils.getDeviceVersion(),
+                    // Package could not be resolved (e.g. uninstalled) -> leave instead of
+                    // showing a blank screen or crashing.
+                    navigateBack = uiModel == null,
                 )
             }
         }

@@ -21,10 +21,16 @@ class AppOverrideMapper @Inject constructor(
             it.flags and ApplicationInfo.FLAG_SYSTEM == 0 && it.enabled
         }.filterNot { appInfo ->
             existingOverrides.any { appInfo.packageName == it.packageName }
-        }.map {
-            val icon = context.packageManager.getApplicationIcon(it.packageName)
-            val label = context.packageManager.getApplicationLabel(it).toString()
-            AppUiModel(it.packageName, label, icon)
+        }.mapNotNull { appInfo ->
+            // Guard per app: a single package with a broken icon/label must not take down
+            // the whole picker list (consistent with mapAppOverride below).
+            runCatching {
+                AppUiModel(
+                    appInfo.packageName,
+                    context.packageManager.getApplicationLabel(appInfo).toString(),
+                    context.packageManager.getApplicationIcon(appInfo),
+                )
+            }.getOrNull()
         }.sortedBy {
             it.appName
         }
@@ -57,9 +63,12 @@ class AppOverrideMapper @Inject constructor(
         )
     }
 
-    fun mapEmptyOverride(packageName: String): AppUiModel {
-        // If this crashes then something is fishy...
-        val appInfo = context.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    fun mapEmptyOverride(packageName: String): AppUiModel? {
+        // The package may have been uninstalled between listing and opening it, so guard
+        // instead of crashing. Callers treat null as "package gone" and navigate back.
+        val appInfo = runCatching {
+            context.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        }.getOrNull() ?: return null
 
         return AppUiModel(
             packageName = packageName,

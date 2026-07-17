@@ -52,6 +52,9 @@ android {
     hilt {
         enableAggregatingTask = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 room {

@@ -206,7 +206,8 @@ fun CheckBoxDialogPreference(
         LazyColumn {
             items(items = items, key = { item -> item.key }) { item ->
                 fun canChangeCheckbox(): Boolean {
-                    return item.checked.not() || items.count { it.checked } == minSelected + 1
+                    // Can always tick a box; can only untick while more than the minimum stay checked.
+                    return item.checked.not() || items.count { it.checked } > minSelected
                 }
                 CheckboxDialogRow(
                     text = stringResource(id = item.text),
