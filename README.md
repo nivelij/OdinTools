@@ -1,8 +1,6 @@
 # OdinTools
 Collection of utilities for the AYN Odin 2.  
 
-Latest release: **[1.3.1](https://github.com/langerhans/OdinTools/releases/latest)**
-
 [![Build OdinTools](https://github.com/langerhans/OdinTools/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/langerhans/OdinTools/actions/workflows/build.yml)
 ### Features
 #### App overrides
@@ -18,7 +16,7 @@ Latest release: **[1.3.1](https://github.com/langerhans/OdinTools/releases/lates
 #### Others
 - Display saturation setting. This is set immediately and will be applied after a reboot as well. Note that it takes a few seconds after you first unlock the device to apply.
 - Vibration strength setting which allows more fine-grained control over the vibration strength and even lower values than the lowest stock setting.
-- Automatically enable and disable charging separation at customizable battery levels.
+- Automatically enable and disable charging separation at customizable battery levels, with a notification when charging is paused or resumed.
 
 ### Contact
 If you have any questions, feel free to find me on the AYN Discord at https://discord.com/invite/pWCpvEUTdR
