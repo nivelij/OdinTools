@@ -30,8 +30,8 @@ android {
         applicationId = "de.langerhans.odintools"
         minSdk = 33
         targetSdk = 34
-        versionCode = 14
-        versionName = "1.3.4"
+        versionCode = 15
+        versionName = "1.3.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

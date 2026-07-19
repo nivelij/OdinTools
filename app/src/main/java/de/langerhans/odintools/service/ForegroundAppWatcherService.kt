@@ -17,6 +17,7 @@ import de.langerhans.odintools.models.FanMode
 import de.langerhans.odintools.models.L2R2Style
 import de.langerhans.odintools.models.PerfMode
 import de.langerhans.odintools.tools.BatteryLevelReceiver
+import de.langerhans.odintools.tools.ChargeLimitNotifier
 import de.langerhans.odintools.tools.SettingsRepo
 import de.langerhans.odintools.tools.ShellExecutor
 import de.langerhans.odintools.tools.VideoOutputReceiver
@@ -174,6 +175,9 @@ class ForegroundAppWatcherService @Inject constructor() : AccessibilityService()
             // Turning the feature off must also lift any separation it engaged; otherwise
             // charging stays bypassed until a later battery event hits the disable threshold.
             settings.disableChargingSeparationIfActive()
+            // The receiver is now unregistered and can no longer clear its ongoing notification,
+            // so drop it here to avoid a stale "charging paused" note lingering forever.
+            ChargeLimitNotifier.cancel(this)
         }
         chargeLimitEnabled = newValue
     }

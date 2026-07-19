@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.5
+
+### Features
+- **Charge limit:** while the charger is plugged in, an ongoing notification now explains what the battery is actually doing — either *"Charging to 80%"* or *"Charging paused at 49%"* with the reason it is being held (power runs straight to the device, and it resumes automatically once the battery drops to the lower limit). This makes the previously invisible hold-band behaviour clear: plugging in within your configured range holds the charge on purpose rather than topping up. The notification clears when unplugged or when the feature is turned off.
+
+### Other
+- The Charge limit dialog now spells out that charging only resumes at the lower limit, so plugging in mid-range may hold instead of charging.
+
 ## v1.3.4
 
 ### Features

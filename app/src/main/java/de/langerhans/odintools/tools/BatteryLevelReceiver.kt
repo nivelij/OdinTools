@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.BatteryManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -38,15 +39,38 @@ class BatteryLevelReceiver : BroadcastReceiver() {
                 separationEnabled = settings.chargingSeparationEnabled(),
             )
         ) {
-            ChargeAction.ENABLE_SEPARATION -> {
-                settings.enableChargingSeparation()
-                ChargeLimitNotifier.notifySeparationEnabled(context, batteryLevel)
-            }
-            ChargeAction.DISABLE_SEPARATION -> {
-                settings.disableChargingSeparation()
-                ChargeLimitNotifier.notifySeparationDisabled(context, batteryLevel)
-            }
+            ChargeAction.ENABLE_SEPARATION -> settings.enableChargingSeparation()
+            ChargeAction.DISABLE_SEPARATION -> settings.disableChargingSeparation()
             ChargeAction.NONE -> Unit
+        }
+
+        // Reflect the resulting state in an ongoing notification so the (otherwise invisible)
+        // charge-limit behaviour is explained while plugged in: charging up to the max, or held
+        // at the limit and why. Recomputed after the action above so it shows the post-action truth.
+        ChargeLimitNotifier.update(
+            context = context,
+            status = decideChargeStatus(
+                plugged = isPlugged(context, intent),
+                separationEnabled = settings.chargingSeparationEnabled(),
+            ),
+            batteryLevel = batteryLevel,
+            minLevel = prefs.minBatteryLevel,
+            maxLevel = prefs.maxBatteryLevel,
+        )
+    }
+
+    private fun isPlugged(context: Context, intent: Intent): Boolean = when (intent.action) {
+        Intent.ACTION_POWER_CONNECTED -> true
+        Intent.ACTION_POWER_DISCONNECTED -> false
+        else -> {
+            // BATTERY_CHANGED carries EXTRA_PLUGGED directly; SCREEN_ON/OFF do not, so fall back
+            // to the sticky battery intent to learn the current plug state.
+            val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+                .takeIf { it != -1 }
+                ?: context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+                    ?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+                ?: 0
+            plugged != 0
         }
     }
 
@@ -59,6 +83,19 @@ class BatteryLevelReceiver : BroadcastReceiver() {
             Intent.ACTION_SCREEN_ON,
         )
     }
+}
+
+enum class ChargeStatus { UNPLUGGED, CHARGING, PAUSED }
+
+/**
+ * Pure mapping from the current plug + separation state to what the user should be told while the
+ * charge-limit feature is on. Unplugged means nothing to explain (the notification is cleared);
+ * plugged with separation engaged means charging is held at the limit; otherwise it is charging.
+ */
+internal fun decideChargeStatus(plugged: Boolean, separationEnabled: Boolean): ChargeStatus = when {
+    !plugged -> ChargeStatus.UNPLUGGED
+    separationEnabled -> ChargeStatus.PAUSED
+    else -> ChargeStatus.CHARGING
 }
 
 enum class ChargeAction { ENABLE_SEPARATION, DISABLE_SEPARATION, NONE }

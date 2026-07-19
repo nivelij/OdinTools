@@ -10,28 +10,35 @@ import de.langerhans.odintools.R
 import de.langerhans.odintools.main.MainActivity
 
 /**
- * Posts a single, silent, low-importance notification reflecting the current charge-limit state.
- * A fixed notification id means each transition updates the same notification in place instead of
- * stacking. Requires POST_NOTIFICATIONS, which the app self-grants in
- * [SettingsRepo.applyRequiredSettings]; if it is missing, [NotificationManager.notify] simply
- * no-ops.
+ * Owns the single, silent, low-importance charge-limit notification. A fixed notification id means
+ * every update replaces the same notification in place instead of stacking. While the charger is
+ * connected it shows an ongoing notification explaining the charging state (topping up, or held at
+ * the limit and why); once unplugged it is cleared. Requires POST_NOTIFICATIONS, which the app
+ * self-grants in [SettingsRepo.applyRequiredSettings]; if it is missing, [NotificationManager]
+ * calls simply no-op.
  */
 object ChargeLimitNotifier {
 
     private const val CHANNEL_ID = "charge_limit"
     private const val NOTIFICATION_ID = 1001
 
-    fun notifySeparationEnabled(context: Context, batteryLevel: Int) = post(
-        context,
-        title = context.getString(R.string.chargeLimitNotificationPausedTitle),
-        text = context.getString(R.string.chargeLimitNotificationPausedText, batteryLevel),
-    )
+    fun update(context: Context, status: ChargeStatus, batteryLevel: Int, minLevel: Int, maxLevel: Int) = when (status) {
+        ChargeStatus.UNPLUGGED -> cancel(context)
+        ChargeStatus.CHARGING -> post(
+            context,
+            title = context.getString(R.string.chargeLimitNotificationChargingTitle, maxLevel),
+            text = context.getString(R.string.chargeLimitNotificationChargingText, batteryLevel, maxLevel),
+        )
+        ChargeStatus.PAUSED -> post(
+            context,
+            title = context.getString(R.string.chargeLimitNotificationPausedTitle, batteryLevel),
+            text = context.getString(R.string.chargeLimitNotificationPausedText, minLevel, maxLevel),
+        )
+    }
 
-    fun notifySeparationDisabled(context: Context, batteryLevel: Int) = post(
-        context,
-        title = context.getString(R.string.chargeLimitNotificationResumedTitle),
-        text = context.getString(R.string.chargeLimitNotificationResumedText, batteryLevel),
-    )
+    fun cancel(context: Context) {
+        context.getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
+    }
 
     private fun post(context: Context, title: String, text: String) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -57,7 +64,7 @@ object ChargeLimitNotifier {
             .setStyle(Notification.BigTextStyle().bigText(text))
             .setContentIntent(contentIntent)
             .setOnlyAlertOnce(true)
-            .setAutoCancel(true)
+            .setOngoing(true)
             .build()
 
         manager.notify(NOTIFICATION_ID, notification)

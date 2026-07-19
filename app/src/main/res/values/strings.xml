@@ -81,12 +81,15 @@
     <string name="chargeLimitPreferenceDialogDescription">
         Charging separation means the power goes straight to the device, bypassing the battery.
         Notice that if the power source is insufficient, battery drain will occur.
+        \n\nCharging pauses at the upper limit and only resumes once the battery drops to the lower
+        limit, so plugging in within that range may hold the charge instead of topping it up. While
+        plugged in, a notification shows whether the battery is charging or being held, and why.
     </string>
     <string name="chargeLimitNotificationChannelName">Charge limit</string>
-    <string name="chargeLimitNotificationPausedTitle">Charge limit reached</string>
-    <string name="chargeLimitNotificationPausedText">Charging paused at %1$d%% to protect your battery.</string>
-    <string name="chargeLimitNotificationResumedTitle">Charging resumed</string>
-    <string name="chargeLimitNotificationResumedText">Battery dropped to %1$d%%, charging again.</string>
+    <string name="chargeLimitNotificationChargingTitle">Charging to %1$d%%</string>
+    <string name="chargeLimitNotificationChargingText">Battery at %1$d%%. Charging will pause at %2$d%% to protect it.</string>
+    <string name="chargeLimitNotificationPausedTitle">Charging paused at %1$d%%</string>
+    <string name="chargeLimitNotificationPausedText">OdinTools is holding your battery in the %1$d–%2$d%% range to protect it — power runs straight to the device. Charging resumes automatically once it drops to %1$d%%.</string>
     <string name="lighting">Lighting</string>
     <string name="ledLighting">Thumbstick LED</string>
     <string name="ledLightingDescription">Control the RGB lighting around the thumbsticks.</string>
